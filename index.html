@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - Formação Cidadã Contemporânea</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .quiz-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .quiz-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Seletor de quizzes */
+        .quiz-selector {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .quiz-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.8);
+            color: #667eea;
+        }
+
+        .quiz-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .quiz-btn:hover {
+            transform: scale(1.02);
+            background: white;
+        }
+
+        .questions-nav {
+            background: rgba(255,255,255,0.15);
+            border-radius: 50px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        .question-number-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-number-btn:hover {
+            transform: scale(1.05);
+            background: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .question-number-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .question-number-btn.answered {
+            background: #28a745;
+            color: white;
+            border: 2px solid #fff;
+        }
+
+        .question-number-btn.answered.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .question-number-display {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 30px;
+            padding: 5px 18px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* Estilo para a imagem da questão */
+        .question-image {
+            text-align: center;
+            margin: 10px 0 20px 0;
+        }
+
+        .question-image img {
+            max-width: 100%;
+            max-height: 700px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            object-fit: contain;
+        }
+
+        .alternatives {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .alternatives li {
+            margin-bottom: 12px;
+        }
+
+        .alternatives label {
+            display: flex;
+            align-items: flex-start;
+            padding: 14px 18px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e9ecef;
+        }
+
+        .alternatives label:hover {
+            background: #e9ecef;
+            border-color: #c3c7ca;
+            transform: translateX(3px);
+        }
+
+        .alternatives input[type="radio"] {
+            margin-right: 15px;
+            margin-top: 2px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+            flex-shrink: 0;
+        }
+
+        .alternatives .option-letter {
+            font-weight: bold;
+            margin-right: 12px;
+            color: #667eea;
+            min-width: 25px;
+        }
+
+        .alternatives .option-text {
+            color: #333;
+            line-height: 1.4;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+            display: block;
+        }
+
+        .result-area {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .perfect { color: #28a745; }
+        .good { color: #17a2b8; }
+        .regular { color: #ffc107; }
+        .bad { color: #dc3545; }
+
+        hr {
+            margin: 20px 0;
+            border: none;
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        .progress-bar-container {
+            background: rgba(255,255,255,0.3);
+            border-radius: 30px;
+            height: 8px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: white;
+            height: 100%;
+            border-radius: 30px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .question-status {
+            text-align: center;
+            margin-top: 10px;
+            color: white;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 650px) {
+            .question-card {
+                padding: 20px;
+            }
+            .question-text {
+                font-size: 1rem;
+            }
+            .question-number-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 0.85rem;
+            }
+            .questions-nav {
+                border-radius: 20px;
+                gap: 6px;
+            }
+            .quiz-header h1 {
+                font-size: 1.4rem;
+            }
+            .quiz-btn {
+                padding: 6px 15px;
+                font-size: 0.85rem;
+            }
+            .question-image img {
+                max-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-header">
+            <h1>📚 Quiz - Formação Cidadã Contemporânea</h1>
+            <p>Selecione o quiz desejado</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="question-status" id="question-status"></div>
+        </div>
+
+        <!-- SELETOR DE QUIZZES -->
+        <div class="quiz-selector" id="quiz-selector"></div>
+
+        <div class="question-card" id="question-card">
+            <div id="question-content"></div>
+        </div>
+
+        <div class="questions-nav" id="questions-nav"></div>
+
+        <button class="btn-submit" id="submit-btn">✅ Corrigir Prova</button>
+        <button class="btn-reset" id="reset-btn">🔄 Reiniciar Quiz</button>
+
+        <div id="result-area" class="result-area" style="display: none;"></div>
+        <footer>Selecione um quiz para começar</footer>
+    </div>
+
+    <script>
+        // ============================================
+        // DEFINIÇÃO DOS QUIZZES
+        // ============================================
+        
+        // APOL 1 - 22 questões (seu quiz original)
+        const apol1 = [
+            { text: "Diante do cenário high tech, políticas públicas de inclusão digital devem ser norteadas por objetivos que incluam: <br><br> I. a inserção no mercado de trabalho e a geração de renda. <br> II. o domínio de robótica e de automação. <br> III. a melhoria e a facilitação de tarefas cotidianas das pessoas. <br> IV. a difusão do conhecimento tecnológico. É correto apenas o que se afirma em:", alternatives: ["A) I e II.", "B) I e IV.", "C) II e III.", "D) I, III e IV.", "E) II, III e IV."], correct: "D" },
+            { text: "Considerando os textos apresentados sobre IA generativa, é correto afirmar que a IA generativa:", alternatives: ["A) restringe o aprendizado ao que é legalmente estabelecido e útil ao ser humano, o que facilita seu modo de agir no mundo do conhecimento e do trabalho.", "B) promove a igualdade econômico-social ao substituir o ser humano no exercício de profissões cujas atividades sejam repetitivas e exijam pouco conhecimento.", "C) proporciona novos recursos de linguagem que geram tecnologias capazes de realizar interações próprias dos seres humanos.", "D) estimula o desenvolvimento intelectual dos seres humanos, uma vez que ela assume parte do conhecimento, resolvendo problemas antes delegados apenas a especialistas.", "E) gera pouco impacto socioeconômico em países com elevado desenvolvimento tecnológico, pois, neles, os processos de criação e inovação já estão bem consolidados."], correct: "C" },
+            { text: "Baseando-se no contexto da Ética, avalie as afirmativas. É correto apenas o que se afirma em: <br><br> I. A Ética é uma área da filosofia que estuda os fundamentos da estética. <br> II. A Ética busca compreender as características pessoais que moldam as virtudes e os vícios de cada indivíduo. <br> III. A Ética não se preocupa com o significado, a origem e o valor dos costumes e comportamentos humanos. <br> IV. A Ética não tem como propósito refletir sobre os fundamentos morais, buscando compreender as características pessoais que moldam as virtudes e os vícios que cada indivíduo pode manifestar. <br> V. A Ética não se preocupa com o senso moral e a consciência moral de cada pessoa.", alternatives: ["A) I, apenas", "B) II, apenas", "C) II e IV", "D) II, III e IV", "E) II, III, IV e V"], correct: "B" },
+            { text: "R3 - O problema do excesso de informações é uma característica marcante da sociedade contemporânea, impulsionada principalmente pela rápida evolução tecnológica e pela expansão da internet. Vivemos em uma era marcada pelo excesso de informações.<br><br><img src='imagem/imagem-Q04.png' alt='StockEU/shutterstock' style='max-width:100%; margin:10px 0; border-radius:10px;'><br><br>Com base no contexto apresentado, assinale a alternativa que representa o principal desafio para a sociedade contemporânea:", alternatives: ["A) Acessar a internet e suas diversas fontes de informação.", "B) Criar conteúdo relevantes e originais em meio à avalanche de dados.", "C) Discernir entre informações relevantes e irrelevantes, evitando a sobrecarga cognitiva.", "D) Consumir passivamente todo o conteúdo disponível on-line, sem senso crítico.", "E) Manter-se atualizado sobre todas as notícias e eventos do mundo, mesmo que irrelevantes para sua vida."], correct: "C" },
+            { text: "Com base no texto sobre competências (conhecimento, habilidade, atitude, valores e emoções), qual elemento é considerado o suporte fundamental sobre o qual os demais elementos se sustentam?", alternatives: ["A) Habilidade, pois permite colocar o conhecimento em prática e resolver problemas de forma eficaz.", "B) Atitude, pois determina a iniciativa e a persistência necessárias para alcançar objetivos.", "C) Valores, pois guiam o comportamento e as decisões do indivíduo, orientando-o para a ética e para a responsabilidade.", "D) Conhecimento, pois fornece a base de informações e compreensão necessárias para o desenvolvimento das habilidades e da tomada de decisões.", "E) Emoções, pois influenciam o desempenho e a capacidade de se relacionar com os outros, além de determinar a resiliência e o senso crítico."], correct: "D" },
+            { text: "Sobre letramento digital e inclusão digital, assinale a sequência correta (V para verdadeiro e F para falso): <br><br> ( ) O letramento digital se resume ao conhecimento técnico de usar ferramentas digitais. <br> ( ) A inclusão digital não está relacionada à inclusão social. <br> ( ) O letramento digital é essencial para a participação ativa na sociedade da informação. <br> ( ) A falta de acesso à internet impede a inclusão digital. <br> ( ) A inclusão digital não contribui para reduzir as disparidades socioeconômicas.", alternatives: ["A) V, F, V, F, V", "B) V, V, F, F, V", "C) F, F, V, V, F", "D) F, V, V, V, F", "E) F, V, F, V, V"], correct: "C" },
+            { text: "Segundo Daher Júnior (2012), os valores determinam o que podemos fazer, o certo e o errado. Identifique a combinação de fatores que podem influenciar na formação de valores pessoais:", alternatives: ["A) conhecimentos, habilidades, atitudes, valores e emoções.", "B) autoconsciência, autocontrole, automotivação, empatia e sociabilidade.", "C) experiências pessoais, educação, cultura, família e religião.", "D) comunicação, pensamento crítico, sociabilidade, cultura e religião.", "E) resiliência, comunicação, empatia, autoconsciência e experiências pessoais."], correct: "C" },
+            { text: "Sobre a Gig Economy, avalie as asserções a seguir e a relação proposta entre elas: <br><br> I. Trabalhadores autônomos informais que atuam em plataformas digitais sem qualquer vínculo empregatício, desprotegidos de regulamentação ou lei trabalhista, compõem a Gig Economy. <br><br> II. Os trabalhadores, na Gig Economy, arcam com todos os custos necessários para desempenhar o seu trabalho, ganham por produção e enfrentam longas jornadas diárias, o que os deixa mais desgastados e com problemas de saúde. <br><br> A respeito dessas asserções, assinale a opção correta:", alternatives: ["A) As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "B) A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "C) A asserção I é uma proposição falsa, e a II é uma proposição verdadeira.", "D) As asserções I e II são proposições falsas.", "E) As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I."], correct: "E" },
+            { text: "Com base nos conteúdos da disciplina, identifique qual alternativa expressa corretamente o conceito de identidade cultural:", alternatives: ["A) A identidade cultural é determinada biologicamente e permanece inalterada ao longo do tempo.", "B) A identidade cultural é formada por elementos religiosos e linguísticos.", "C) A identidade cultural é construída socialmente e moldada por valores, crenças e experiências compartilhadas.", "D) A identidade cultural é imposta por instituições estatais e se mantém inalterada pela convivência social.", "E) A identidade cultural é exclusivamente ligada à nacionalidade e ao território de nascimento."], correct: "C" },
+            { text: "Considerando o texto e a imagem apresentados (grafite), é correto afirmar que o grafite consiste em uma:", image: "imagem/imagem-Q10.png", alternatives: ["A) expressão popular associada à contestação e, por isso, não é reconhecido como arte.", "B) expressão convencional de hierarquias consolidadas ao longo do tempo e ainda presentes na sociedade.", "C) expressão cultural que problematiza os valores e as relações da sociedade com os espaços onde é produzida.", "D) intervenção urbana que traz prejuízos para a sociedade porque gera conflitos latentes entre diferentes classes sociais.", "E) intervenção estética realizada com o propósito de embelezamento padronizado dos espaços urbanos pelo uso de cores intensas e contrastantes."], correct: "C" },
+            { text: "Sob a ótica da ética no contexto político e contemporâneo, assinale a alternativa correta:", alternatives: ["A) Os conteúdos éticos são cada vez mais fruto de ideologias político-partidárias.", "B) O valor da ação humana no contexto ético está relacionado a preceitos metafísicos.", "C) Os valores éticos estão cada vez mais desassociados da cultura.", "D) O sentido coletivo e político das ações humanas individuais reflete a ética no contexto social, conectando-os cada vez mais.", "E) A ética tem soberana influência no julgamento das ações dos políticos eleitos democraticamente, não considerando suas ações."], correct: "D" },
+            { text: "Enumere as habilidades de acordo com a classificação: 1 – Hard skills / 2 – Soft skills. <br><br> ( ) Habilidades técnicas mensuráveis e relacionadas a conhecimentos específicos. <br> ( ) Competências comportamentais, interpessoais e emocionais. <br> ( ) Mais difíceis de medir e desenvolver, pois envolvem aspectos subjetivos como comportamento, princípios, crenças e hábitos. <br> ( ) Podem ser aprendidas e comprovadas por meio de testes, certificados e diplomas. <br><br> Marque a sequência correta:", alternatives: ["A) 1, 1, 2, 2", "B) 1, 1, 2, 1", "C) 1, 2, 2, 1", "D) 2, 1, 2, 1", "E) 2, 2, 1, 1"], correct: "C" },
+            { text: "Sobre conceitos de cultura, analise as afirmativas abaixo: <br><br> I. O termo 'apropriação cultural' descreve o uso indevido de algum elemento cultural de algum grupo minoritário por um grupo dominante. <br> II. A expressão 'cultura popular' fala da cultura criada para circular nos meios de comunicação de massa. <br> III. Por 'aculturação', compreendemos o fenômeno da fusão de manifestações culturais vindas de matrizes diferentes. <br> IV. A 'cultura erudita' é entendida como mais sofisticada e acessível apenas a pessoas que foram 'preparadas' para entendê-la. <br><br> Estão corretas:", alternatives: ["A) I, II e IV.", "B) I, III e IV.", "C) II, III e IV.", "D) I e II.", "E) I e IV."], correct: "B" },
+            { text: "Com base no texto sobre TIC e sociedade da informação, conclui-se que:", alternatives: ["A) a inserção de um indivíduo nas relações sociais e virtuais contemporâneas exige mais que inclusão digital técnica.", "B) o domínio de recursos tecnológicos de acesso à internet assegura ao indivíduo compreender a informação e desenvolver a capacidade de tomar decisões.", "C) a solução para se democratizar o acesso à informação no Brasil consiste em estendê-lo a todo o território, disponibilizando microcomputadores nos domicílios brasileiros.", "D) o compartilhamento de informações e experiências mediado pelas TIC baseia-se no pressuposto de que o indivíduo resida em centros urbanos.", "E) os avanços das TIC vêm-se refletindo globalmente, de modo uniforme, haja vista a possibilidade de comunicação em tempo real entre indivíduos de diferentes regiões."], correct: "A" },
+            { text: "O inquilino citado pela personagem Mafalda refere-se:", image: "imagem/imagem-Q15.png", alternatives: ["A) Ao constrangimento por receber olhares de reprovação pela sua decisão.", "B) Ao costume de sempre pegar o troco, mas dessa vez foi diferente.", "C) A sua própria consciência em relação à obrigação moral.", "D) A uma pessoa que mora na mesma casa que ela.", "E) Ao temor de receber um castigo por sua decisão."], correct: "C" },
+            { text: "Analise os dois contextos sobre ética e política. Considerando o contexto apresentado, pode-se dizer que a ética é essencial para a estruturação de estratégias políticas e inserção de pessoas em uma sociedade. Assinale a alternativa correta que melhor representa o conceito de ética:", alternatives: ["A) Valores e costumes partilhados por uma sociedade.", "B) Normas impostas pelas leis jurídicas.", "C) Normas determinadas pelo governo local, que as diferencia das leis estrangeiras.", "D) Transferência dos valores praticados no ambiente pessoal para a esfera social.", "E) Proibição da interferência de pessoas estrangeiras na pátria local."], correct: "A" },
+            { text: "A educação é um dos pilares fundamentais para o desenvolvimento humano e social. Com base nos conteúdos da disciplina, identifique qual alternativa expressa corretamente o papel da educação no desenvolvimento humano e social:", alternatives: ["A) A educação é um processo técnico voltado à formação profissional.", "B) A educação é um instrumento de controle social que limita a criatividade dos indivíduos.", "C) A educação capacita os indivíduos para enfrentar desafios contemporâneos e participar ativamente da sociedade.", "D) A educação é um privilégio destinado a grupos com maior acesso à tecnologia."], correct: "C" },
+            { text: "Que é democracia? A partir dos argumentos expostos no texto, avalie as afirmações. É correto apenas o que se afirma em:", alternatives: ["A) I, III e IV.", "B) II, III e IV.", "C) II e III.", "D) I e IV.", "E) I e II."], correct: "A" },
+            { text: "Conhecendo o ditado 'Nunca se esqueça de onde você veio...', refletindo na representatividade da transformação digital, indique qual das frases abaixo é a alternativa correta para a definição do termo em questão:", alternatives: ["A) A transformação digital representa a mudança para uma economia digital, na qual as atividades econômicas tradicionais são substituídas por atividades digitais.", "B) A transformação digital consiste na modificação do parque de software de uma empresa por equipamentos mais modernos.", "C) A transformação digital reflete a necessidade de uma organização em mudar o DNA de sua empresa e de seus sócios na busca indústria 4.0.", "D) A transformação digital representa uma mudança do quadro societário da empresa buscando profissionais com perfis mais tecnológicos.", "E) A transformação digital representa que a empresa passou de um patamar digital para analógico."], correct: "A" },
+            { text: "A inovação tecnológica pode ser caracterizada como um processo multifacetado que envolve a integração de várias funções da empresa e de atores externos, conforme ilustra o diagrama a seguir.<img src='imagem/imagem-Q20.png' alt='StockEU/shutterstock' style='max-width:100%; margin:10px 0; border-radius:10px;'><br><br>Com base nas relações estabelecidas no diagrama, avalie as afirmações a seguir, concernentes ao processo de inovação tecnológica.<br><br>I. A inovação tecnológica é alicerçada por atividades realizadas nas empresas, tais como esforços de P&D, contratação de mão de obra qualificada, licenciamento e aquisição de tecnologias, investimento produtivo e ações de marketing.<br><br>II. A empresa deve interagir com fontes externas de informação e cooperação tecnológica, tais como clientes, fornecedores, universidades, concorrentes e institutos públicos e privados de pesquisa.<br><br>III. Cabe à empresa não só propor a implantação de leis e políticas científicas e tecnológicas, mas também buscar financiamento específico para processos inovadores nas instituições financeiras.<br><br>IV. A geração de resultados efetivos de inovação tecnológica, tanto de produto quanto de processo, impacta economicamente a própria capacidade de uma empresa para futuras inovações.<br><br>É correto apenas o que se afirma em:", alternatives: ["A) I e IV.", "B) II e III.", "C) III e IV.", "D) I, II e III.", "E) I, II e IV."], correct: "E" },
+            { text: "R1 - A formação profissional tradicional nas universidades era focada na memorização de conteúdos específicos. Avalie as asserções: <br><br> I. A formação profissional tradicional priorizava a memorização de conteúdos específicos. <br> II. Essa abordagem visava preparar os alunos para o mercado de trabalho, desenvolvendo as habilidades necessárias para o exercício da profissão. A respeito dessas asserções, assinale a opção correta:", alternatives: ["A) As asserções I e II são proposições verdadeiras, e a II é uma justificativa correta da I.", "B) As asserções I e II são proposições verdadeiras, mas a II não é uma justificativa correta da I.", "C) A asserção I é uma proposição verdadeira, e a II é uma proposição falsa.", "D) A asserção I é uma proposição falsa, e a II é uma proposição verdadeira.", "E) As asserções I e II são proposições falsas."], correct: "C" },
+            { text: "A liberdade de expressão é tão antiga quanto os direitos fundamentais. No que se refere à liberdade de expressão e à liberdade de imprensa, leia as asserções. A respeito dessas assertivas, assinale a questão correta:", alternatives: ["A) As assertivas I e II são falsas.", "B) As assertivas I e II são proposições excludentes.", "C) A assertiva II contraria a ideia expressa na assertiva I.", "D) A assertiva I é uma proposição falsa e a II é verdadeira.", "E) As duas assertivas são verdadeiras e a segunda afirmativa justifica e complementa a primeira."], correct: "D" }
+        ];
+
+        // APOL 2 - EXEMPLO com 5 questões (você pode adicionar quantas quiser)
+        
+            const apol2 = [
+    { text: "A quantidade de cidades sem representação feminina na política municipal ainda é alarmante. Em 2020, por exemplo, o número de câmaras 100% masculinas chegou a 846 municípios. Contudo, essa soma fica bem abaixo dos 2.072 municípios sem vereança feminina em 2008. (TSE, Sub-representação feminina nos municípios caiu mais da metade após cota de gênero, 03/01/2024. Fonte: Tribunal Superior Eleitoral. Sub-representação feminina nos municípios caiu mais da metade após cota de gênero. Disponível em https://www.tse.jus.br/comunicacao/noticias/2024/Janeiro/sub-representacao-feminina-nos-municipios-caiu-mais-da-metade-apos-cota-de-genero, Acesso em 19/3/24) Assinale a afirmativa que melhor descreve a desigualdade de gênero:", alternatives: ["A) As mulheres são sub-representadas em posições de poder político e tomada de decisão.", "B) A taxa de desemprego entre as mulheres é consistentemente mais baixa do que entre os homens.", "C) As mulheres recebem, em média, salários mais altos do que os homens em ocupações similares.", "D) As mulheres têm acesso igualitário à educação em todos os níveis, sem disparidades de gênero.", "E) Todos os cargos de liderança nas empresas brasileiras são ocupados exclusivamente por homens."], correct: "A" },
+    { text: "A sustentabilidade é um conceito que envolve o equilíbrio entre o desenvolvimento econômico, a preservação ambiental e a justiça social. Políticas públicas sustentáveis são fundamentais para garantir esse equilíbrio no longo prazo. Com base nos conteúdos da disciplina, identifique qual alternativa apresenta corretamente um princípio fundamental da sustentabilidade:", alternatives: ["A) Exploração intensiva de recursos naturais para acelerar o crescimento econômico.", "B) Redução da biodiversidade para facilitar o uso agrícola do solo.", "C) Equilíbrio entre crescimento econômico, justiça social e preservação ambiental.", "D) Substituição de áreas verdes por empreendimentos urbanos de grande porte."], correct: "C" },
+    { text: "Apesar dos avanços, contudo, o mercado de trabalho ainda é um dos principais espaços de reprodução da desigualdade racial. É o que mostra o levantamento divulgado pelo Departamento Intersindical de Estatística e Estudos Socioeconômicos, o Dieese, a partir de dados da PNAD Contínua, do IBGE. Os dados apontam que os negros representem 56,1% da população em idade de trabalho, entre os desempregados, 65,1% são negros. Fonte: CARTACAPITAL. Como a desigualdade racial persiste no mercado de trabalho brasileiro. Economia (adaptado) 20/11/2023. Disponível em: https://www.cartacapital.com.br/economia/como-a-desigualdade-racial-persiste-no-mercado-de-trabalho-brasileiro/. Acesso em 19/03/2024. <br><br>Considerando o tema da desigualdade racial no Brasil, ANALISE as sentenças a seguir, assinalando V para as afirmativas verdadeiras e F para as afirmativas falsas <br><br>( ) A desigualdade racial no Brasil se manifesta apenas no âmbito econômico, não influenciando outras esferas sociais. <br><br>( ) A desigualdade racial no Brasil é um fenômeno do passado, não representando mais um desafio significativo para a sociedade contemporânea. <br><br>( ) A população negra no Brasil enfrenta maior vulnerabilidade social, incluindo acesso limitado à educação de qualidade e oportunidades de emprego. <br><br>( ) As políticas de ação afirmativa têm contribuído significativamente para reduzir as disparidades raciais no acesso ao ensino superior e mercado de trabalho no Brasil. A sequência correta é:", alternatives: ["A) F, V, V, F", "B) V, F, V, F", "C) F, V, F, V", "D) V, V, F, F", "E) F, F, V, V"], correct: "E" },
+    { text: "Os deslocamentos populacionais ao longo da história influenciaram a formação de povos e a diversidade cultural. Esses movimentos são essenciais para entender os grupos étnicos, considerando choques e assimilações culturais. Motivos para migração variam de aspectos econômicos a guerras e fome, levando as pessoas a procurar novas oportunidades. As migrações têm duas etapas principais: emigração que corresponde à saída de uma área e a imigração marcando a chegada a outra área. As classificações consideram o tempo, sendo temporárias ou permanentes, assim como o espaço, se elas são internas (no mesmo país) ou internacionais. Além disso, as migrações podem ser organizadas em diferentes padrões. Diante das informações apresentadas, analise os elementos a seguir e enumere, na ordem sequencial, as explicações que se relacionam com cada um dos padrões migratórios. <br><br>1 - Migrações pendulares / 2 - Migrações sazonais / 3 - Migrações forçadas. <br><br>( ) ligadas a determinadas estações do ano <br>( ) decorrentes de fatores como conflitos, desastres naturais ou perseguições <br>( ) movimentos regulares entre dois locais. Agora, marque a sequência correta:", alternatives: ["A) 1, 2, 3", "B) 1, 3, 2", "C) 2, 1, 3", "D) 2, 3, 1", "E) 3, 2, 1"], correct: "D" },
+    { text: "No cenário contemporâneo, as redes sociais emergiram como uma força transformadora que transcende as barreiras geográficas e conecta milhões de pessoas em todo o mundo. O advento dessas plataformas digitais trouxe consigo uma série de mudanças nas instituições sociais, psicológicas e políticas, modificando a maneira como nos comunicamos, interagimos e discutimos o mundo ao nosso redor. FONTE: Impacto das Redes Sociais na Sociedade. Disponível em https://quick.com.br/impacto-das-redes-sociais-na-sociedade/. Acesso em 26 de fev. 2024. Com base no texto fornecido, analise as alternativas abaixo e avalie qual das afirmações destaca o impacto das redes sociais na sociedade contemporânea:", alternatives: ["A) As redes sociais têm um papel limitado na disseminação da globalização, principalmente devido à predominância de outras formas de comunicação online.", "B) A introdução das redes sociais tem afetado apenas os padrões de entretenimento, sem influenciar significativamente outros aspectos da vida contemporânea.", "C) As redes sociais revolucionaram a maneira como as pessoas se comunicam e interagem, transcendendo o âmbito pessoal para se tornarem influentes nos domínios social, político e profissional.", "D) O uso das redes sociais é restrito a questões pessoais e de lazer, com pouco impacto nos setores econômicos e na percepção de distâncias.", "E) Apesar de seu papel na comunicação pessoal, as redes sociais têm sido menos relevantes do que outras tecnologias na transformação da interação humana e da dinâmica econômica."], correct: "C" },
+    { text: "A LGBTQIAPN+fobia é uma forma de preconceito e violência dirigida a pessoas que pertencem à comunidade LGBTQIAPN+. Essa fobia se manifesta em agressões físicas, verbais, exclusão social e até homicídios. O Brasil lidera rankings mundiais de violência contra essa população, evidenciando a urgência de políticas de proteção e educação para o respeito à diversidade. Com base nos conteúdos da disciplina, identifique qual alternativa apresenta corretamente o significado de LGBTQIAPN+fobia:", alternatives: ["A) A valorização das identidades LGBTQIAPN+ pela sociedade.", "B) O medo irracional e a intolerância contra pessoas LGBTQIAPN+.", "C) A aceitação das diferenças de gênero e sexualidade.", "D) A promoção de direitos civis para pessoas LGBTQIAPN+."], correct: "B" },
+    { text: "Gênero, raça, religião, condições socioeconômicas, deficiências, idade e orientação sexual. Esses são alguns dos fatores que fazem com que milhões de pessoas sejam colocadas à margem da sociedade, no Brasil e no mundo, e que enfrentam discriminação, preconceitos, violências e injustiças. Essas pessoas, que são excluídas do processo de garantia de direitos básicos, são as chamadas minorias sociais [...] Em primeiro lugar, é importante entender que a palavra 'minoria' não tem a ver com uma questão quantitativa, ou seja, com um número menor de pessoas. Muitas vezes, inclusive, as minorias compõem a maior parte da população em números absolutos - basta pensar nas mulheres, que formam 51,1% dos habitantes do Brasil. O que acontece é que, historicamente, certos grupos concentram o poder político e simbólico - como, por exemplo, pessoas do sexo masculino, brancas e com grande patrimônio financeiro. Isso os torna figuras dominantes na sociedade, que determinam quais são os 'padrões ideais' em termos físicos, sociais, cognitivos, comportamentais e assim por diante. Quem não se encaixa nesses padrões fica à margem do processo de socialização. Fonte: Spagna, 2023. Disponível em: https://www.terra.com.br/noticias/educacao/minorias-sociais-o-que-voce-precisa-saber-sobre-o-tema,b633c50c2bacf69e27f7d35699ea36a82i672ikv.html?utm_source=clipboard, acesso em 12/02/2024.<br> Diante do exposto e com base no conteúdo da rota 6, sobre minorias sociais avalie as afirmações a seguir: <br><br> I - As Nações Unidas promovem a liberdade, a igualdade, os direitos a todos, independente das diferenças, nacionalidades, raça ou da etnia. <br><br> II - As lutas das minorias têm como finalidade promover a transformação estrutural na sociedade, buscando a inclusão política, social e cultural dos grupos marginalizados. <br><br> III - O termo minorias refere-se a grupos sociais considerados desprivilegiados na sociedade, os quais empenham esforços para obter reconhecimento de seus direitos bem como sua participação no debate público. É correto o que se afirma em:", alternatives: ["A) I, apenas.", "B) II, apenas.", "C) I e II, apenas.", "D) I e III, apenas.", "E) I, II e III."], correct: "E" },
+    { text: "Observe a imagem acima:<br><br> (campanha de conscientização sobre o câncer de mama) A imagem apresenta uma campanha de conscientização sobre o câncer de mama. Considerando seu papel na promoção da saúde e prevenção de doenças, é correto afirmar tratar-se de uma campanha de:", image:"imagem/imagem-Q08-AP2.png", alternatives: ["A) Prevenção primária.", "B) Prevenção secundária.", "C) Prevenção terciária.", "D) Prevenção quinquenária.", "E) Prevenção medicamentosa."], correct: "A" },
+    { text: "Ao longo dos séculos, os conceitos de campo, cidade, urbano e rural têm passado por evoluções, com destaque para mudanças significativas após a Primeira Revolução Industrial. Durante esse período, houve uma migração expressiva da população do campo para as cidades, motivada pelo crescimento da indústria. Essa transformação não apenas alterou as percepções desses termos, mas também redefiniu suas conceituações. <br><br> Considerando as mudanças ocorridas na relação entre campo e cidade, avalie as afirmações a seguir. <br><br>I - A urbanização não apenas alterou a paisagem, mas também redefiniu as percepções coletivas sobre o modo de vida, influenciando a maneira como concebemos e categorizamos os espaços habitados. <br><br>II - O processo de êxodo rural, marcado pela migração das pessoas do campo para as cidades, impulsionou mudanças significativas nas dinâmicas econômicas, sociais, culturais, políticas e estruturais. <br><br> III - O espaço rural passou a ser definido como a porção urbanizada, caracterizada pelas cidades e práticas urbanas. <br><br> IV - A população urbana atual supera a rural, e futuros aumentos na população urbana mundial devem ocorrer principalmente nos países em desenvolvimento. É correto o que se afirma em:", alternatives: ["A) I e II, apenas.", "B) II e III, apenas.", "C) I, II e III, apenas.", "D) I, II e IV, apenas.", "E) II, III e IV, apenas."], correct: "D" },
+    { text: "Quando se trata de discriminação racial, há uma ruptura do princípio da igualdade, cuja melhor definição conceitual está na Lei 12.288/2010, que indica discriminação racial ou étnico-racial toda distinção, exclusão, restrição ou preferência baseada em raça, cor, descendência ou origem nacional ou étnica que tenha por objeto anular ou restringir o reconhecimento, gozo ou exercício, em igualdade de condições, de direitos humanos e liberdades fundamentais nos campos político, econômico, social, cultural ou em qualquer outro campo da vida pública ou privada. Fonte: https://www.oxfam.org.br/blog/racismo-no-brasil-por-que-isso-ainda-e-uma-realidade-veja-aqui/, acesso em 25/02/2024. <br><br> Diante do exposto e com base no conteúdo da rota 6, sobre racismo e desigualdade, avalie as afirmações a seguir: <br><br>I - Os pretos e pardos representam mais da metade da população brasileira, totalizando cerca de 112 milhões de pessoas. <br><br>II - No Brasil, a violência contra pessoas negras é reconhecida como um fenômeno histórico que abrange dimensões simbólicas, psicológicas, morais e físicas. <br><br>III - A desigualdade entre as mulheres negras se manifesta em diversas situações, como salários inferiores, ocupação em empregos menos valorizados e, frequentemente, atuando em trabalhos informais. É correto o que se afirma em:", alternatives: ["A) I, apenas.", "B) II, apenas.", "C) I e II, apenas.", "D) I e III, apenas.", "E) I, II e III."], correct: "E" },
+    { text: "No contexto social, a acessibilidade é fundamental para eliminar obstáculos que dificultam a plena participação das pessoas em diferentes áreas da vida. Especificamente para as pessoas que tem necessidades especiais específicas, acessibilidade significa a habilidade de usar espaços urbanos, mobiliário, equipamentos, edifícios, transporte, dispositivos, sistemas, e meios de comunicação e informação com segurança e autonomia, seja de forma independente ou com assistência. <br><br> Baseando-se no contexto apresentado, avalie as afirmativas a seguir.<br><br> I - O termo correto para se referir às pessoas com necessidades especiais é 'deficiente'. <br><br> II - O termo adequado para se referir às pessoas com necessidades especiais é 'pessoa com deficiência'. <br><br> III - É necessário implementar políticas públicas que visem reduzir as disparidades educacionais e de emprego para pessoas com deficiência. <br><br> IV - A acessibilidade desempenha um papel fundamental na promoção da inclusão e na garantia da participação plena das pessoas com deficiência na sociedade. É correto apenas o que se afirma em:", alternatives: ["A) I e III.", "B) II e III.", "C) II e IV.", "D) I, III e IV.", "E) II, III e IV."], correct: "E" },
+    { text: "A biodiversidade é essencial para o equilíbrio ecológico e a sobrevivência humana. No entanto, a ação humana tem acelerado sua perda, o que exige reflexão crítica sobre os fatores que contribuem para esse cenário. Com base nos conteúdos da disciplina, identifique qual alternativa apresenta corretamente um fator que contribui diretamente para a perda da biodiversidade no cenário contemporâneo:", alternatives: ["A) A expansão de áreas verdes urbanas, promovendo corredores ecológicos.", "B) A implementação de políticas públicas de reflorestamento em áreas degradadas.", "C) A intensificação do desmatamento para expansão agrícola e urbana.", "D) A criação de unidades de conservação ambiental em regiões de risco."], correct: "C" },
+    { text: "As migrações internacionais são motivadas por diversos fatores, como conflitos armados, perseguições políticas, crises econômicas e desastres naturais. Os migrantes forçados, como os refugiados, são pessoas que se deslocam involuntariamente em busca de proteção e melhores condições de vida. A distinção entre migrantes voluntários e forçados é essencial para compreender os direitos e necessidades específicas desses grupos, especialmente no contexto das políticas internacionais de acolhimento e assistência humanitária. <br><br>Com base nos conteúdos da disciplina, identifique qual alternativa apresenta corretamente a condição de migrante internacional forçado:", alternatives: ["A) Pessoa que migra por vontade própria em busca de novas oportunidades profissionais.", "B) Indivíduo que se desloca por motivos turísticos e retorna ao país de origem.", "C) Pessoa que é obrigada a deixar seu país devido a fatores como guerra, perseguição ou desastres naturais.", "D) Trabalhador que se muda para outro país por meio de contrato temporário."], correct: "C" },
+    { text: "Os povos indígenas no Brasil possuem direitos assegurados pela Constituição Federal de 1988, incluindo o reconhecimento de suas terras, línguas, culturas e formas de organização social. No entanto, esses direitos são frequentemente violados por interesses econômicos e políticos que ameaçam seus territórios e modos de vida. <br>A demarcação das terras indígenas é uma das principais pautas de luta desses povos, pois garante não apenas sua sobrevivência física, mas também a preservação de sua identidade cultural. Com base nos conteúdos da disciplina, identifique qual alternativa apresenta corretamente um direito garantido às populações indígenas pela Constituição de 1988:", alternatives: ["A) A obrigação de abandonar suas tradições para se integrar à sociedade nacional.", "B) O direito originário às terras tradicionalmente ocupadas.", "C) A submissão obrigatória às normas religiosas da maioria.", "D) A proibição de uso de tecnologias modernas em suas comunidades."], correct: "B" },
+    { text: "A forma como nos referimos às pessoas que utilizam dispositivos de assistência, como cadeiras de rodas, muletas, cães-guia e aparelhos auditivos, tem evoluído ao longo do tempo. No passado, termos pejorativos eram comuns, refletindo uma falta de sensibilidade da sociedade. No entanto, em 2006, a Convenção sobre os Direitos das Pessoas com Deficiência das Nações Unidas estabeleceu o termo adequado: Pessoa com Deficiência (PcD), reconhecendo a dignidade humana de todos, independentemente de suas particularidades. O texto relata o processo da evolução da acessibilidade e inclusão social. <br>Considerando as mudanças ocorridas, avalie as afirmações a seguir. <br><br> I - Garantir a acessibilidade promove a inclusão social, que envolve igualdade de direitos e oportunidades em educação, emprego, saúde e participação cívica. <br><br> II - A acessibilidade é fundamental para superar as barreiras físicas, comunicacionais e tecnológicas que limitam a participação das PcD na vida social, abrangendo espaços urbanos, transporte e comunicação. <br><br> III - A estigmatização e a falta de compreensão contribuem para a marginalização social das PcD, especialmente no ambiente de trabalho, onde enfrentam discriminação e falta de adaptações razoáveis. <br><br> IV - A inclusão social requer políticas públicas e ações afirmativas para corrigir desigualdades históricas, enquanto a acessibilidade rural exige planejamento inclusivo em todas as áreas, desde calçadas até espaços culturais. É correto o que se afirma em:", alternatives: ["A) I e II, apenas.", "B) II e III, apenas.", "C) I, II e III, apenas.", "D) I, II e IV, apenas.", "E) II, III e IV, apenas."], correct: "C" },
+    { text: "A sociedade brasileira é marcada por profundas desigualdades que se manifestam em diferentes esferas: étnico-raciais, de classe, de gênero e de orientação sexual. Essas desigualdades têm raízes históricas na colonização, escravidão e exclusão sistemática de determinados grupos. A marginalização de minorias sociais é um reflexo da estrutura social que perpetua privilégios e limita o acesso a direitos básicos para grande parte da população. Com base nos conteúdos da disciplina, identifique qual alternativa apresenta corretamente um fator que contribui para a marginalização de grupos considerados minorias sociais no Brasil:", alternatives: ["A) A predominância de políticas públicas voltadas para grupos privilegiados.", "B) A igualdade de acesso à educação e saúde entre todos os grupos sociais.", "C) A valorização das culturas afrodescendentes e indígenas nas instituições públicas.", "D) A ampla representatividade de mulheres e pessoas LGBTQIAPN+ em cargos políticos."], correct: "A" },
+    { text: "De acordo com um estudo publicado pela revista Biological Conservation, a mudança na distribuição geográfica das espécies é um dos efeitos sobre a biodiversidade provocados pelas alterações climáticas. Enquanto áreas adequadas e preservadas para a permanência de uma espécie estão ficando inabitáveis, áreas desprotegidas tem se transformado em novos habitats, já que as espécies têm se deslocado para fora de unidades de preservação em busca de condições climáticas mais adequadas. COUTINHO, Sidney R. Biodiversidade do Brasil ameaçada por mudanças climáticas. Disponível em: < https://conexao.ufrj.br/2023/12/biodiversidade-do-brasil-ameacada-por-mudancas-climaticas/> Acesso em: 28 fev. 2024 (adaptado). <br><br>O trecho revela que o meio ambiente é composto por todos os fatores físicos, biológicos e químicos que envolvem os seres vivos. Partindo desta premissa, pode-se afirmar, no contexto apresentado, quanto ao ecossistema e a biodiversidade, que:", alternatives: ["A) O ecossistema e a biodiversidade estão inversamente ligados ao meio ambiente.", "B) O ecossistema e a biodiversidade estão proporcionalmente ligados ao meio ambiente.", "C) O ecossistema e a biodiversidade estão vagamente ligados ao meio ambiente.", "D) O ecossistema e a biodiversidade estão negativamente ligados ao meio ambiente.", "E) O ecossistema e a biodiversidade estão intrinsecamente ligados ao meio ambiente."], correct: "E" },
+    { text: "A Declaração Universal dos Direitos Humanos, adotada pela ONU em 1948, estabelece que todos os seres humanos têm direito à liberdade, igualdade e dignidade, sem distinção de raça, cor, sexo, religião ou origem. Esses princípios são fundamentais para a proteção das minorias sociais, que historicamente foram excluídas e marginalizadas. A luta por direitos humanos é, portanto, uma luta por reconhecimento, justiça e inclusão. Com base nos conteúdos da disciplina. <br><br> Identifique qual alternativa apresenta corretamente um princípio da Declaração Universal dos Direitos Humanos:", alternatives: ["A) A distinção entre pessoas com base em sua origem social é permitida em sociedades democráticas.", "B) Todos os seres humanos têm direito à liberdade e igualdade, sem discriminação.", "C) Os direitos humanos são aplicáveis a cidadãos de países desenvolvidos.", "D) A dignidade humana é um valor relativo, sujeito às leis locais."], correct: "B" },
+    { text: "Os conceitos de campo, cidade, urbano e rural têm evoluído ao longo dos séculos, especialmente após a Primeira Revolução Industrial. Inicialmente considerados espaços geográficos distintos, campo e cidade passaram a representar modos de vida contrastantes. A migração em massa para as cidades durante a Revolução Industrial não apenas transformou as paisagens, mas também influenciou a dinâmica social e econômica. As cidades, antes centros urbanos, tornaram-se símbolos de modernidade e industrialização.<br><br> A opção correta que representa o fator que impulsionou a migração de pessoas do campo para as cidades é:", alternatives: ["A) Crescimento das indústrias.", "B) Aumento das atividades agrícolas.", "C) As práticas tradicionais.", "D) Aprimoramento dos comércios locais.", "E) Aumento das atividades pecuárias."], correct: "A" },
+    { text: "Analise a imagem a seguir:<br><br><img src='imagem/imagem-Q20-AP2.png' alt='Pesquisa diferença salarial' style='max-width:80%; max-height:400px; margin:10px auto; border-radius:10px; display:block;'><br><br>Segundo a pesquisa apresentada, as mulheres ganham cerca de 20% menos do que os homens no Brasil, e a diferença salarial entre os gêneros permanece neste patamar elevado mesmo quando se compara trabalhadores do mesmo perfil de escolaridade e idade e na mesma categoria de ocupação. Fonte: Alvarenga, 2021. Disponível em: https://g1.globo.com/dia-das-mulheres/noticia/2022/03/08/mulheres-ganham-em-media-205percent-menos-que-homens-no-brasil.ghtml, acesso em 25/02/2024.<br><br> Considerando-se a imagem, o texto apresentado e o material das rotas, analise as sentenças a seguir, assinalando V para as afirmativas verdadeiras e F para as afirmativas falsas em relação a esse contexto: <br><br>( ) A disparidade de rendimentos entre homens e mulheres no mercado de trabalho é influenciada por fatores como segregação ocupacional e discriminação salarial. <br><br>( ) As desigualdades entre homens e mulheres têm suas raízes na estrutura familiar, nas instituições sociais, religiosas e no Estado, sendo reforçadas por crenças, valores e costumes que sustentam a ideia de superioridade masculina. <br><br>( ) O movimento feminista, iniciado no período da Revolução Francesa, pautou-se no questionamento dos modelos sociais existentes, principalmente no que tange ao avanço na discussão quanto às responsabilidades pela casa e família, o direito ao voto, participação na política, condições de trabalho e salário. Dessa maneira, a sequência correta é:", alternatives: ["A) V – V – V", "B) V – V – F", "C) V – F – V", "D) F – V – V", "E) F – V – F"], correct: "A" },
+    { text: "Os deslocamentos populacionais ao longo da história têm desempenhado um papel fundamental na formação de povos e na diversidade cultural. A compreensão desses movimentos é crucial para entender os grupos étnicos, considerando os conflitos e assimilações culturais ao longo do tempo. Essas migrações possibilitaram a ocupação e colonização de vastas regiões, destacando-se o continente americano como exemplo desse fenômeno.<br><br>Considerando os fatores das migrações, analise as assertivas que seguem, e marque V para as asserções verdadeiras, e F para as asserções falsas.<br><br>( ) Os motivos de uma migração podem ser das mais variadas situações, tais como aspectos econômicos, religiosos, escassez de recursos naturais, política, guerra, fome.<br><br>( ) Todas essas adversidades levam um povo a abandonar sua terra de origem e encontrar um novo lugar para recomeçar suas vidas, em busca de sobrevivência e esperança de novas oportunidades.<br><br>( ) Poucas cidades do mundo abrigam comunidades de imigrantes, pois a população em geral tem medo, aversão ou hostilidade em relação a pessoas estrangeiras ou culturas diferentes.<br><br>( ) Diversos fatores impulsionam os movimentos migratórios, uma delas é a disparidade socioeconômica entre os países, o desemprego e a falta de perspectivas.<br><br>Agora, assinale a alternativa que apresenta a sequência correta:", alternatives: ["A) V – V – F – F", "B) V – V – F – V", "C) V – F – F – V", "D) F – F – V – V", "E) F – V – F – V"], correct: "B" },
+];
+
+        // APOL 3 - EXEMPLO (você pode adicionar mais)
+        // const apol3 = [ ... ];
+
+        // Lista de todos os quizzes disponíveis
+        const quizzes = {
+            apol1: { nome: "📖 APOL 1 - Formação Cidadã", questoes: apol1 },
+            apol2: { nome: "📝 APOL 2 - Ética e Cidadania", questoes: apol2 }
+            // apol3: { nome: "🏆 APOL 3 - Tecnologia e Sociedade", questoes: apol3 }
+        };
+
+        let currentQuiz = "apol1";  // Quiz ativo
+        let userAnswers = [];
+        let currentIndex = 0;
+        let isSubmitted = false;
+
+        // Função para criar os botões de seleção de quizzes
+        function renderQuizSelector() {
+            const selectorContainer = document.getElementById('quiz-selector');
+            selectorContainer.innerHTML = '';
+            
+            for (const [key, quiz] of Object.entries(quizzes)) {
+                const btn = document.createElement('button');
+                btn.textContent = quiz.nome;
+                btn.classList.add('quiz-btn');
+                if (key === currentQuiz) {
+                    btn.classList.add('active');
+                }
+                btn.addEventListener('click', () => {
+                    currentQuiz = key;
+                    resetQuiz();
+                    renderQuizSelector();
+                    renderCurrentQuestion();
+                    updateNavigationButtons();
+                    document.getElementById('result-area').style.display = 'none';
+                    document.getElementById('quiz-header-title').textContent = quiz.nome;
+                });
+                selectorContainer.appendChild(btn);
+            }
+        }
+
+        function getCurrentQuestions() {
+            return quizzes[currentQuiz].questoes;
+        }
+
+        function updateNavigationButtons() {
+            const questions = getCurrentQuestions();
+            const navContainer = document.getElementById('questions-nav');
+            navContainer.innerHTML = '';
+            
+            for (let i = 0; i < questions.length; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i + 1;
+                btn.classList.add('question-number-btn');
+                
+                if (i === currentIndex) {
+                    btn.classList.add('active');
+                }
+                
+                if (userAnswers[i] !== null && !isSubmitted) {
+                    btn.classList.add('answered');
+                }
+                
+                btn.addEventListener('click', () => {
+                    if (isSubmitted) {
+                        currentIndex = i;
+                        renderCurrentQuestion();
+                        showFeedbackForCurrentQuestion();
+                        updateNavigationButtons();
+                    } else {
+                        currentIndex = i;
+                        renderCurrentQuestion();
+                        updateNavigationButtons();
+                    }
+                });
+                
+                navContainer.appendChild(btn);
+            }
+        }
+
+        // FUNÇÃO RENDER CURRENT QUESTION - MODIFICADA PARA SUPORTAR IMAGENS
+        function renderCurrentQuestion() {
+            const questions = getCurrentQuestions();
+            const question = questions[currentIndex];
+            const container = document.getElementById('question-content');
+            const savedAnswer = userAnswers[currentIndex];
+            
+            // Verifica se a questão tem imagem e cria o HTML da imagem
+            let imageHtml = '';
+            if (question.image) {
+                imageHtml = `
+                    <div class="question-image">
+                        <img src="${question.image}" alt="Imagem da questão">
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = `
+                <div class="question-number-display">Questão ${currentIndex + 1}/${questions.length}</div>
+                ${imageHtml}
+                <div class="question-text">${question.text}</div>
+                <ul class="alternatives">
+                    ${question.alternatives.map((alt, altIdx) => {
+                        const letter = String.fromCharCode(65 + altIdx);
+                        const isChecked = (savedAnswer === letter);
+                        const optionText = alt.substring(3);
+                        return `
+                            <li>
+                                <label>
+                                    <input type="radio" name="current-question" value="${letter}" ${isChecked ? 'checked' : ''} ${isSubmitted ? 'disabled' : ''} onchange="saveCurrentAnswer('${letter}')">
+                                    <span class="option-letter">${letter})</span>
+                                    <span class="option-text">${optionText}</span>
+                                </label>
+                            </li>
+                        `;
+                    }).join('')}
+                </ul>
+            `;
+            
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            const progressPercent = (answeredCount / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+            document.getElementById('question-status').textContent = `📌 ${answeredCount} de ${questions.length} questões respondidas`;
+        }
+        
+        window.saveCurrentAnswer = function(value) {
+            if (isSubmitted) return;
+            userAnswers[currentIndex] = value;
+            updateNavigationButtons();
+            
+            const questions = getCurrentQuestions();
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            const progressPercent = (answeredCount / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+            document.getElementById('question-status').textContent = `📌 ${answeredCount} de ${questions.length} questões respondidas`;
+        }
+        
+        function showFeedbackForCurrentQuestion() {
+            const existingFeedback = document.querySelector('.feedback');
+            if (existingFeedback) existingFeedback.remove();
+            
+            const questions = getCurrentQuestions();
+            const question = questions[currentIndex];
+            const userAnswer = userAnswers[currentIndex];
+            const isCorrect = (userAnswer === question.correct);
+            
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            
+            if (isCorrect) {
+                const correctText = question.alternatives.find(alt => alt.startsWith(question.correct + ")"));
+                feedbackDiv.innerHTML = `✅ Correto! ${correctText}`;
+            } else {
+                let msg = `❌ Incorreto. `;
+                if (userAnswer) {
+                    const userText = question.alternatives.find(alt => alt.startsWith(userAnswer + ")"));
+                    msg += `Você marcou ${userAnswer}) ${userText ? userText.substring(3) : ''}. `;
+                } else {
+                    msg += `Você não respondeu esta questão. `;
+                }
+                const correctText = question.alternatives.find(alt => alt.startsWith(question.correct + ")"));
+                msg += `Resposta correta: ${question.correct}) ${correctText ? correctText.substring(3) : ''}`;
+                feedbackDiv.innerHTML = msg;
+            }
+            
+            document.getElementById('question-card').appendChild(feedbackDiv);
+        }
+        
+        function submitQuiz() {
+            if (isSubmitted) return;
+            
+            const questions = getCurrentQuestions();
+            const notAnswered = [];
+            for (let i = 0; i < userAnswers.length; i++) {
+                if (userAnswers[i] === null) notAnswered.push(i + 1);
+            }
+            
+            if (notAnswered.length > 0) {
+                if (!confirm(`⚠️ Você ainda não respondeu as questões: ${notAnswered.join(', ')}.\nDeseja corrigir mesmo assim?`)) {
+                    return;
+                }
+            }
+            
+            isSubmitted = true;
+            const correctCount = calculateScore();
+            const totalQuestions = questions.length;
+            const percentage = (correctCount / totalQuestions) * 100;
+            
+            let scoreClass = '';
+            let message = '';
+            
+            if (correctCount === totalQuestions) {
+                scoreClass = 'perfect';
+                message = '🏆 Perfeito! Você acertou todas as questões! Parabéns! 🎉';
+            } else if (correctCount >= Math.floor(totalQuestions * 0.7)) {
+                scoreClass = 'good';
+                message = '🌟 Muito bom! Você tem um excelente conhecimento.';
+            } else if (correctCount >= Math.floor(totalQuestions * 0.5)) {
+                scoreClass = 'regular';
+                message = '👍 Bom trabalho! Estude os pontos que errou para melhorar ainda mais.';
+            } else {
+                scoreClass = 'bad';
+                message = '📚 Continue estudando! Reveja o material da disciplina e tente novamente.';
+            }
+            
+            const resultArea = document.getElementById('result-area');
+            resultArea.innerHTML = `
+                <h2>📊 Resultado Final - ${quizzes[currentQuiz].nome}</h2>
+                <div class="score ${scoreClass}">${correctCount} / ${totalQuestions}</div>
+                <p style="margin-top: 10px;">${message}</p>
+                <p>Percentual de acertos: ${percentage.toFixed(1)}%</p>
+                <hr>
+                <p style="font-size: 0.9rem; color: #666;">✅ Nota oficial: ${(correctCount * 6.7).toFixed(1)} pontos (considerando 6,7 por questão)</p>
+                <p style="font-size: 0.85rem; color: #888; margin-top: 10px;">💡 Clique nos números das questões para ver o feedback de cada uma!</p>
+            `;
+            resultArea.style.display = 'block';
+            
+            showFeedbackForCurrentQuestion();
+            renderCurrentQuestion();
+            updateNavigationButtons();
+            
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function calculateScore() {
+            const questions = getCurrentQuestions();
+            let correctCount = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[i] === questions[i].correct) {
+                    correctCount++;
+                }
+            }
+            return correctCount;
+        }
+        
+        function resetQuiz() {
+            const questions = getCurrentQuestions();
+            userAnswers = new Array(questions.length).fill(null);
+            currentIndex = 0;
+            isSubmitted = false;
+            
+            const existingFeedback = document.querySelector('.feedback');
+            if (existingFeedback) existingFeedback.remove();
+            
+            document.getElementById('result-area').style.display = 'none';
+            
+            renderCurrentQuestion();
+            updateNavigationButtons();
+        }
+        
+        // Inicialização
+        renderQuizSelector();
+        resetQuiz();
+        
+        document.getElementById('submit-btn').addEventListener('click', submitQuiz);
+        document.getElementById('reset-btn').addEventListener('click', resetQuiz);
+    </script>
+</body>
+</html>
