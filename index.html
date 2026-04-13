@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz - Formação Cidadã Contemporânea</title>
+
+    
     <style>
         * {
             margin: 0;
@@ -387,7 +389,97 @@
         <div id="result-area" class="result-area" style="display: none;"></div>
         <footer>Desenvolvedor Jonathas Trevezani</footer>
     </div>
+        
+         <!-- SEÇÃO DE QUESTÕES DISCURSIVAS -->
+<div class="question-card" style="margin-top: 30px;">
+    <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px; border-radius: 20px 20px 0 0; text-align: center;">
+        <h3>✍️ Comentário Discursivo</h3>
+    </div>
+    <div style="padding: 20px;">
+        <p style="color: #666; margin-bottom: 15px; font-style: italic;">📌 Escolha UM dos temas abaixo para comentar.</p>
+        
+        <!-- Temas para escolher -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: bold;">🎯 Escolha o tema:</label>
+            <select id="temaDiscursivo" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; background: white;">
+                <option value="">-- Selecione um tema --</option>
+                <option value="etica_moral">1. Ética e Moral</option>
+                <option value="cidadania">2. Cidadania</option>
+                <option value="fake_news">3. Fake News</option>
+                <option value="sustentabilidade">4. Sustentabilidade</option>
+                <option value="diversidade">5. Diversidade Cultural</option>
+            </select>
+        </div>
+        
+        <!-- Campo para escrever o comentário -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: bold;">✏️ Escreva seu comentário:</label>
+            <textarea id="comentarioDiscursivo" rows="5" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Digite aqui seu comentário sobre o tema escolhido..."></textarea>
+        </div>
+        
+        <!-- Botões -->
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+            <button onclick="salvarComentario()" style="background: #28a745; color: white; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; font-size: 0.9rem;">💾 Salvar Comentário</button>
+            <button onclick="limparComentario()" style="background: #6c757d; color: white; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; font-size: 0.9rem;">🗑️ Limpar</button>
+        </div>
+        
+        <!-- Mensagem de confirmação -->
+        <div id="mensagemComentario" style="margin-top: 15px; text-align: center; font-size: 0.9rem; display: none;"></div>
+        
+        <details style="margin-top: 20px;">
+            <summary style="cursor: pointer; background: #667eea; color: white; padding: 10px; border-radius: 10px; text-align: center; font-weight: bold;">📖 Ver Gabarito para Estudo</summary>
+            <div style="margin-top: 15px; padding: 15px; background: #e9ecef; border-radius: 10px;">
+                <p><strong>1. Ética x Moral:</strong><br>Ética: reflexão sobre o certo e errado.<br>Moral: conjunto de regras e costumes da sociedade.<br>📌 Exemplo: Moral → não roubar (regra social). Ética → refletir por que roubar é errado.</p>
+                <p><strong>2. Cidadania:</strong><br>É o exercício de direitos e deveres na sociedade. Importância: garante participação, respeito e organização social.</p>
+                <p><strong>3. Fake news:</strong><br>Prejudicam porque espalham informações falsas, influenciam decisões erradas e podem causar conflitos e desinformação.</p>
+                <p><strong>4. Sustentabilidade:</strong><br>É usar os recursos sem prejudicar o futuro. Importância: preservar o meio ambiente e garantir qualidade de vida.</p>
+                <p><strong>5. Diversidade cultural:</strong><br>É a variedade de culturas (costumes, crenças, tradições). Importância: promove respeito, convivência e evita preconceito.</p>
+            </div>
+        </details>
+    </div>
+</div>
 
+<script>
+    function salvarComentario() {
+        const temaSelect = document.getElementById('temaDiscursivo');
+        const tema = temaSelect.options[temaSelect.selectedIndex]?.text;
+        const comentario = document.getElementById('comentarioDiscursivo').value;
+        const mensagemDiv = document.getElementById('mensagemComentario');
+        
+        if (!temaSelect.value) {
+            mensagemDiv.style.display = 'block';
+            mensagemDiv.style.color = '#dc3545';
+            mensagemDiv.innerHTML = '⚠️ Por favor, selecione um tema primeiro!';
+            setTimeout(() => { mensagemDiv.style.display = 'none'; }, 3000);
+            return;
+        }
+        
+        if (!comentario.trim()) {
+            mensagemDiv.style.display = 'block';
+            mensagemDiv.style.color = '#dc3545';
+            mensagemDiv.innerHTML = '⚠️ Por favor, escreva seu comentário!';
+            setTimeout(() => { mensagemDiv.style.display = 'none'; }, 3000);
+            return;
+        }
+        
+        // Salvar no console (apenas para treinamento)
+        console.log('Tema:', tema);
+        console.log('Comentário:', comentario);
+        
+        mensagemDiv.style.display = 'block';
+        mensagemDiv.style.color = '#28a745';
+        mensagemDiv.innerHTML = '✅ Comentário salvo! (Verifique no console do navegador - F12)';
+        
+        setTimeout(() => { mensagemDiv.style.display = 'none'; }, 3000);
+    }
+    
+    function limparComentario() {
+        document.getElementById('temaDiscursivo').value = '';
+        document.getElementById('comentarioDiscursivo').value = '';
+        document.getElementById('mensagemComentario').style.display = 'none';
+    }
+</script>
+        
     <script>
         // ============================================
         // DEFINIÇÃO DOS QUIZZES
@@ -445,13 +537,28 @@
     { text: "Os deslocamentos populacionais ao longo da história têm desempenhado um papel fundamental na formação de povos e na diversidade cultural. A compreensão desses movimentos é crucial para entender os grupos étnicos, considerando os conflitos e assimilações culturais ao longo do tempo. Essas migrações possibilitaram a ocupação e colonização de vastas regiões, destacando-se o continente americano como exemplo desse fenômeno.<br><br>Considerando os fatores das migrações, analise as assertivas que seguem, e marque V para as asserções verdadeiras, e F para as asserções falsas.<br><br>( ) Os motivos de uma migração podem ser das mais variadas situações, tais como aspectos econômicos, religiosos, escassez de recursos naturais, política, guerra, fome.<br><br>( ) Todas essas adversidades levam um povo a abandonar sua terra de origem e encontrar um novo lugar para recomeçar suas vidas, em busca de sobrevivência e esperança de novas oportunidades.<br><br>( ) Poucas cidades do mundo abrigam comunidades de imigrantes, pois a população em geral tem medo, aversão ou hostilidade em relação a pessoas estrangeiras ou culturas diferentes.<br><br>( ) Diversos fatores impulsionam os movimentos migratórios, uma delas é a disparidade socioeconômica entre os países, o desemprego e a falta de perspectivas.<br><br>Agora, assinale a alternativa que apresenta a sequência correta:", alternatives: ["A) V – V – F – F", "B) V – V – F – V", "C) V – F – F – V", "D) F – F – V – V", "E) F – V – F – V"], correct: "B" },
 ];
 
+           const apol3 = [
+    { text: "O conceito CHAVE representa:", alternatives: ["A) Conhecimento, História, Atitude, Valor e Emoção", "B) Conhecimento, Habilidade, Atitude, Valores e Emoções", "C) Cultura, História, Atitude, Valores e Ética", "D) Conhecimento, Humanidade, Ação, Verdade e Emoção"], correct: "B" },
+    { text: "A ética pode ser definida como:", alternatives: ["A) Conjunto de leis do governo", "B) Regras religiosas obrigatórias", "C) Reflexão sobre o certo e o errado", "D) Costumes fixos de uma sociedade"], correct: "C" },
+    { text: "A moral está relacionada:", alternatives: ["A) À filosofia universal", "B) Aos costumes e regras de uma sociedade", "C) Apenas à religião", "D) À política internacional"], correct: "B" },
+    { text: "Na democracia, o poder vem:", alternatives: ["A) Dos militares", "B) Dos governantes", "C) Do povo", "D) Das empresas"], correct: "C" },
+    { text: "Fake news são:", alternatives: ["A) Notícias científicas", "B) Informações verdadeiras", "C) Notícias falsas ou enganosas", "D) Leis digitais"], correct: "C" },
+    { text: "Cultura pode ser definida como:", alternatives: ["A) Apenas música e dança", "B) Apenas religião", "C) Conjunto de valores, costumes e tradições", "D) Apenas língua"], correct: "C" },
+    { text: "O etnocentrismo é:", alternatives: ["A) Respeito às culturas", "B) Mistura de culturas", "C) Julgar outra cultura como inferior", "D) Estudo da cultura"], correct: "C" },
+    { text: "Sustentabilidade significa:", alternatives: ["A) Usar recursos sem limite", "B) Preservar o meio ambiente pensando no futuro", "C) Apenas plantar árvores", "D) Evitar tecnologia"], correct: "B" },
+    { text: "A biodiversidade refere-se:", alternatives: ["A) Apenas aos animais", "B) À variedade de vida no planeta", "C) Apenas às plantas", "D) À poluição"], correct: "B" },
+    { text: "Inclusão social significa:", alternatives: ["A) Separar grupos sociais", "B) Garantir participação de todos na sociedade", "C) Dar privilégios a poucos", "D) Excluir minorias"], correct: "B" }
+];
+
+
         // APOL 3 - EXEMPLO (você pode adicionar mais)
         // const apol3 = [ ... ];
 
         // Lista de todos os quizzes disponíveis
         const quizzes = {
             apol1: { nome: "📖 APOL 1 - Formação Cidadã", questoes: apol1 },
-            apol2: { nome: "📝 APOL 2 - Ética e Cidadania", questoes: apol2 }
+            apol2: { nome: "📝 APOL 2 - Ética e Cidadania", questoes: apol2 },
+            apol3: { nome: "📝 APOL Diversas - Ética e Cidadania", questoes: apol3 }
             // apol3: { nome: "🏆 APOL 3 - Tecnologia e Sociedade", questoes: apol3 }
         };
 
